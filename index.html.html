@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Big Four — Jornal dos Quatro Grandes do Rio</title>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4541574318300832" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --grass-dark:#123024;
+    --gold:#C89B3C;
+    --cream:#F3EFE3;
+    --cream-dark:#E7E0CC;
+    --ink:#1A1A1A;
+    --slate:#4B4B44;
+    --line: rgba(26,26,26,0.15);
+
+    --bg: #F3EFE3;
+    --text: #1A1A1A;
+    --sub: #4B4B44;
+    --accent: #C89B3C;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Source Serif 4',serif;-webkit-font-smoothing:antialiased;transition:background .35s ease, color .35s ease;}
+  a{color:inherit;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 26px;}
+
+  header.masthead{background:var(--grass-dark);color:var(--cream);padding:34px 0 0;}
+  .meta-row{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;}
+  .nameplate{text-align:center;padding:6px 0 20px;border-bottom:3px solid var(--gold);}
+  .nameplate h1{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(42px,7vw,72px);margin:0;letter-spacing:.02em;}
+  .nameplate .tagline{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--cream-dark);margin-top:8px;}
+
+  .intro{padding:36px 0 6px;}
+  .intro p{font-size:17px;line-height:1.7;color:var(--sub);max-width:720px;transition:color .35s ease;}
+
+  .section-head{display:flex;justify-content:space-between;align-items:baseline;padding:26px 0 16px;border-bottom:2px solid var(--text);transition:border-color .35s ease;}
+  .section-head h2{font-family:'Fraunces',serif;font-weight:700;font-size:20px;margin:0;text-transform:uppercase;letter-spacing:.04em;}
+  .section-head .date{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--sub);}
+
+  .picker{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;padding:20px 0 10px;}
+  .pick{display:flex;flex-direction:column;align-items:center;gap:10px;padding:22px 10px;border:2px solid transparent;background:none;cursor:pointer;font-family:inherit;transition:transform .15s ease, border-color .2s ease;}
+  .pick:hover{transform:translateY(-4px);}
+  .pick.active{border-color:var(--accent);}
+  .pick-badge{font-family:'Fraunces',serif;font-weight:900;font-size:20px;width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .pick-name{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;text-align:center;}
+  .pick-todos{background:var(--cream-dark);}
+  .pick-todos .pick-badge{background:var(--ink);color:#fff;}
+  .pick-todos .pick-name{color:var(--ink);}
+  .pick-flamengo{background:#8C1116;}
+  .pick-flamengo .pick-badge{background:#1A1A1A;color:#fff;}
+  .pick-flamengo .pick-name{color:#F3EFE3;}
+  .pick-vasco{background:#141414;}
+  .pick-vasco .pick-badge{background:#fff;color:#141414;}
+  .pick-vasco .pick-name{color:#F3EFE3;}
+  .pick-botafogo{background:#fff;border:2px solid #B5121B;}
+  .pick-botafogo .pick-badge{background:#B5121B;color:#fff;}
+  .pick-botafogo .pick-name{color:#1A1A1A;}
+  .pick-fluminense{background:#1F4D36;}
+  .pick-fluminense .pick-badge{background:#7A1E3C;color:#fff;}
+  .pick-fluminense .pick-name{color:#F3EFE3;}
+
+  .stories{padding:10px 0 60px;}
+  .story{padding:22px 0;border-top:1px solid var(--line);transition:border-color .35s ease;}
+  .story:first-child{border-top:none;}
+  .story .tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);padding:3px 8px;margin-bottom:12px;transition:color .35s ease, border-color .35s ease;}
+  .story h3{font-family:'Fraunces',serif;font-weight:700;font-size:21px;margin:0 0 10px;}
+  .story p{font-size:15.5px;line-height:1.65;color:var(--sub);margin:0 0 8px;transition:color .35s ease;}
+  .story .source{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);transition:color .35s ease;}
+
+  .club-title{display:none;align-items:center;gap:14px;padding:26px 0 4px;}
+  .club-title.show{display:flex;}
+  .club-title .dot{width:14px;height:14px;border-radius:50%;}
+  .club-title h2{font-family:'Fraunces',serif;font-weight:800;font-size:clamp(26px,4vw,38px);margin:0;}
+
+  .adslot{padding:20px 0;text-align:center;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--sub);opacity:.6;}
+
+  footer{background:var(--grass-dark);color:var(--cream-dark);padding:34px 0;margin-top:20px;}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;align-items:center;}
+  footer p{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.04em;margin:0;}
+  .sources{font-size:11px;color:var(--gold);}
+
+  @media(max-width:720px){.picker{grid-template-columns:repeat(3,1fr);}.meta-row{flex-direction:column;gap:4px;text-align:center;}}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap meta-row">
+    <span>Edição de 03 de agosto de 2026</span>
+    <span>Rio de Janeiro, Brasil</span>
+  </div>
+  <div class="nameplate">
+    <h1>BIG FOUR</h1>
+    <div class="tagline">Jornal dos quatro grandes do Rio</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="intro">
+    <p id="introText">Acompanhamento diário de Flamengo, Fluminense, Botafogo e Vasco da Gama, com notícias reunidas de fontes esportivas confiáveis como Lance!, ESPN, Gazeta Esportiva e os canais oficiais dos próprios clubes.</p>
+  </div>
+
+  <div class="section-head">
+    <h2>Escolha seu time</h2>
+    <span class="date">Clique para ver as notícias</span>
+  </div>
+
+  <div class="picker">
+    <button class="pick pick-todos active" data-team="todos">
+      <span class="pick-badge">★</span>
+      <span class="pick-name">Todos</span>
+    </button>
+    <button class="pick pick-flamengo" data-team="flamengo">
+      <span class="pick-badge">FLA</span>
+      <span class="pick-name">Flamengo</span>
+    </button>
+    <button class="pick pick-vasco" data-team="vasco">
+      <span class="pick-badge">VAS</span>
+      <span class="pick-name">Vasco</span>
+    </button>
+    <button class="pick pick-botafogo" data-team="botafogo">
+      <span class="pick-badge">BOT</span>
+      <span class="pick-name">Botafogo</span>
+    </button>
+    <button class="pick pick-fluminense" data-team="fluminense">
+      <span class="pick-badge">FLU</span>
+      <span class="pick-name">Fluminense</span>
+    </button>
+  </div>
+
+  <div class="club-title" id="clubTitle">
+    <span class="dot" id="clubDot"></span>
+    <h2 id="clubName"></h2>
+  </div>
+
+  <div class="section-head">
+    <h2 id="sectionLabel">Últimas notícias</h2>
+    <span class="date">Atualizado hoje</span>
+  </div>
+
+  <div class="stories" id="stories"></div>
+
+  <div class="adslot">
+    <!-- Big Four - Anúncio Principal -->
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-4541574318300832"
+         data-ad-slot="4348930777"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>© 2026 BIG FOUR — RESUMOS BASEADOS EM COBERTURA DE VEÍCULOS ESPORTIVOS</p>
+    <p class="sources">Fontes: Lance! · ESPN · Gazeta Esportiva · Bolavip · sites oficiais dos clubes</p>
+  </div>
+</footer>
+
+<script>
+const DATA = {
+  flamengo: {
+    label: "Flamengo", short: "Rubro-Negro",
+    theme: { bg:"#8C1116", text:"#F3EFE3", sub:"#E7E0CC", accent:"#C89B3C", line:"rgba(243,239,227,0.2)" },
+    dot: "#1A1A1A",
+    stories: [
+      { tag:"Time", title:"Empate expõe insatisfação do elenco", text:"O empate contra o Internacional deixou à mostra o descontentamento do grupo com a queda de rendimento da equipe sob o comando do técnico Leonardo Jardim, que vive um momento de pressão no clube.", source:"Bolavip Brasil" },
+      { tag:"Mercado", title:"Negociação por Thiago Almada tem prazo definido", text:"A diretoria mantém a postura nas conversas por Thiago Almada e já estabeleceu um prazo para as negociações, mesmo após o meia ter afirmado, em entrevista, que prefere outro destino.", source:"Lance!" },
+      { tag:"Mercado", title:"Jogador reserva pode deixar o clube", text:"Um lateral que hoje é reserva na equipe despertou o interesse do Peñarol, do Uruguai, e pode ser negociado ainda durante esta janela de transferências.", source:"Bolavip Brasil" },
+      { tag:"Mercado", title:"Clube inglês consulta situação de goleiro", text:"Um clube da Inglaterra fez contato para entender a situação de um dos goleiros do elenco, mas a diretoria rubro-negra afirma não ter intenção de abrir negociações no momento.", source:"Bolavip Brasil" },
+      { tag:"Opinião", title:"Felipe Melo analisa clássico contra o Palmeiras", text:"O ex-jogador comentou a estratégia esperada para o novo confronto entre Flamengo e Palmeiras, destacando os pontos de equilíbrio entre as duas equipes na temporada.", source:"Lance!" }
+    ]
+  },
+  vasco: {
+    label: "Vasco da Gama", short: "Cruzmaltino",
+    theme: { bg:"#141414", text:"#F3EFE3", sub:"#E7E0CC", accent:"#C89B3C", line:"rgba(243,239,227,0.18)" },
+    dot: "#ffffff",
+    stories: [
+      { tag:"Jogo", title:"Derrota mantém jejum fora de casa", text:"O Vasco perdeu por 1 a 0 para o Vitória, com gol de Renato Kayzer, resultado que estende a sequência sem vitórias como visitante no Campeonato Brasileiro.", source:"Vasco Notícias" },
+      { tag:"Time", title:"Técnico aponta falta de confiança do elenco", text:"Pedro Emanuel analisou a derrota para o Vitória, destacou a falta de confiança do grupo no momento atual e afirmou acreditar na evolução da equipe nas próximas rodadas.", source:"Vasco Notícias" },
+      { tag:"Diretoria", title:"Diretoria libera investimento em reforços", text:"A diretoria recebeu aval para investir até R$ 100 milhões na contratação de reforços, com o clube avaliando principalmente a chegada de um atacante de referência.", source:"Vasco Notícias" },
+      { tag:"Jogo", title:"Clássico contra o Fluminense na Copa do Brasil", text:"O time se prepara para enfrentar o Fluminense pelas oitavas de final da Copa do Brasil, em confronto direto entre dois dos quatro grandes do Rio.", source:"Vasco Notícias" },
+      { tag:"Mercado", title:"Negociações em andamento no ataque", text:"O clube avalia negociações envolvendo dois atacantes por empréstimo e monitora outros nomes no mercado internacional para reforçar o setor ofensivo.", source:"Vasco Notícias" }
+    ]
+  },
+  botafogo: {
+    label: "Botafogo", short: "Alvinegro",
+    theme: { bg:"#ffffff", text:"#1A1A1A", sub:"#4B4B44", accent:"#B5121B", line:"rgba(181,18,27,0.25)" },
+    dot: "#B5121B",
+    stories: [
+      { tag:"Jogo", title:"Vitória histórica no Mineirão", text:"O Botafogo venceu o Cruzeiro por 1 a 0 fora de casa, resultado que encerrou um jejum de dez anos sem triunfos naquele estádio e aproximou o time do G-5 do Campeonato Brasileiro.", source:"Botafogo Hoje" },
+      { tag:"Jogo", title:"Empate sem gols contra o Vitória", text:"Em casa, no Nilton Santos, o time alvinegro pressionou o adversário e criou chances claras, mas não conseguiu converter em gols, terminando a partida em 0 a 0.", source:"Botafogo Hoje" },
+      { tag:"Bastidores", title:"Bastidores marcados por crise financeira", text:"O clube enfrenta uma disputa envolvendo uma crise fiscal estimada em R$ 210 milhões, além de discussões sobre o retorno de John Textor à gestão e uma disputa judicial em curso.", source:"Botafogo Hoje" },
+      { tag:"Mercado", title:"Mercado da bola movimentado", text:"Reportagens recentes mencionam as saídas de Almada e Danilo entre os temas mais discutidos no mercado da bola do clube, junto com possíveis contratações para reforçar o elenco.", source:"Botafogo Hoje" }
+    ]
+  },
+  fluminense: {
+    label: "Fluminense", short: "Tricolor",
+    theme: { bg:"#1F4D36", text:"#F3EFE3", sub:"#E7E0CC", accent:"#F2A6A0", line:"rgba(243,239,227,0.2)" },
+    dot: "#7A1E3C",
+    stories: [
+      { tag:"Jogo", title:"Empate movimentado no Mineirão", text:"Fluminense e Cruzeiro ficaram no 1 a 1 pelo Campeonato Brasileiro. John Kennedy abriu o placar para o time carioca, e Matheus Pereira deixou tudo igual para os mineiros ainda no primeiro tempo.", source:"Gazeta Esportiva" },
+      { tag:"Libertadores", title:"Classificação definida na Libertadores", text:"Depois do sorteio das oitavas de final da Copa Libertadores, o Fluminense já sabe seu adversário: o Independiente Rivadavia, da Argentina, em confronto de ida e volta.", source:"fluminense.com.br" },
+      { tag:"Jogo", title:"Desfalques e retornos para o clássico contra o Vasco", text:"O time recupera o meio-campista Jemmes para o duelo com o Vasco pela Copa do Brasil, mas segue sem poder contar com o zagueiro Thiago Silva e com Freytes, ambos em recuperação.", source:"Lance!" },
+      { tag:"Time", title:"Sequência irregular chama atenção", text:"Reportagens recentes apontam que o Fluminense iguala uma sequência de resultados negativos que não se via havia 34 anos, o que tem pressionado a comissão técnica a rever ajustes táticos.", source:"Lance!" },
+      { tag:"Time", title:"Menor uso da base sob o novo comando técnico", text:"Levantamentos mostram que o Fluminense tem utilizado menos atletas formados na base do clube desde a chegada do técnico Zubeldía, uma mudança de perfil em relação às temporadas anteriores.", source:"Lance!" }
+    ]
+  }
+};
+
+const DEFAULT_THEME = { bg:"#F3EFE3", text:"#1A1A1A", sub:"#4B4B44", accent:"#C89B3C", line:"rgba(26,26,26,0.15)" };
+
+const storiesEl = document.getElementById('stories');
+const sectionLabel = document.getElementById('sectionLabel');
+const clubTitle = document.getElementById('clubTitle');
+const clubName = document.getElementById('clubName');
+const clubDot = document.getElementById('clubDot');
+const introText = document.getElementById('introText');
+const root = document.documentElement;
+
+function applyTheme(t){
+  root.style.setProperty('--bg', t.bg);
+  root.style.setProperty('--text', t.text);
+  root.style.setProperty('--sub', t.sub);
+  root.style.setProperty('--accent', t.accent);
+  root.style.setProperty('--line', t.line);
+}
+
+function renderStories(list){
+  storiesEl.innerHTML = '';
+  list.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'story';
+    div.innerHTML = `<span class="tag">${s.tag}</span><h3>${s.title}</h3><p>${s.text}</p><span class="source">Fonte: ${s.source}</span>`;
+    storiesEl.appendChild(div);
+  });
+}
+
+function selectTeam(team){
+  document.querySelectorAll('.pick').forEach(b => b.classList.toggle('active', b.dataset.team === team));
+
+  if(team === 'todos'){
+    applyTheme(DEFAULT_THEME);
+    clubTitle.classList.remove('show');
+    sectionLabel.textContent = 'Os quatro grandes — últimas notícias';
+    introText.textContent = 'Acompanhamento diário de Flamengo, Fluminense, Botafogo e Vasco da Gama, com notícias reunidas de fontes esportivas confiáveis como Lance!, ESPN, Gazeta Esportiva e os canais oficiais dos próprios clubes.';
+    const all = [].concat(DATA.flamengo.stories.slice(0,2), DATA.fluminense.stories.slice(0,2), DATA.botafogo.stories.slice(0,2), DATA.vasco.stories.slice(0,2));
+    renderStories(all);
+    return;
+  }
+
+  const club = DATA[team];
+  applyTheme(club.theme);
+  clubTitle.classList.add('show');
+  clubName.textContent = club.label;
+  clubDot.style.background = club.dot;
+  sectionLabel.textContent = club.short + ' — últimas notícias';
+  introText.textContent = 'Notícias sobre o ' + club.label + ', reunidas de fontes esportivas confiáveis.';
+  renderStories(club.stories);
+}
+
+document.querySelectorAll('.pick').forEach(btn => {
+  btn.addEventListener('click', () => selectTeam(btn.dataset.team));
+});
+
+selectTeam('todos');
+</script>
+
+</body>
+</html>

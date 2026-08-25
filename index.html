@@ -70,6 +70,7 @@
   .story h3{font-family:'Fraunces',serif;font-weight:700;font-size:21px;margin:0 0 10px;}
   .story p{font-size:15.5px;line-height:1.65;color:var(--sub);margin:0 0 8px;transition:color .35s ease;}
   .story .source{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);transition:color .35s ease;}
+  .story a.source{text-decoration:none;}
 
   .club-title{display:none;align-items:center;gap:14px;padding:26px 0 4px;}
   .club-title.show{display:flex;}
@@ -138,11 +139,69 @@
   </div>
 
   <div class="section-head">
-    <h2 id="sectionLabel">Últimas notícias</h2>
+    <h2 id="sectionLabel">Os quatro grandes — últimas notícias</h2>
     <span class="date">Atualizado hoje</span>
   </div>
 
-  <div class="stories" id="stories"></div>
+  <!-- STORIES-START -->
+  <!--
+    Este bloco é escrito diretamente pelo update_news.py a cada execução.
+    Ele fica visível no HTML puro, sem precisar de JavaScript, o que
+    resolve a violação do AdSense de "tela sem conteúdo do editor".
+    O JavaScript abaixo apenas SUBSTITUI este conteúdo quando o usuário
+    clica em um time específico — a carga inicial já vem pronta.
+  -->
+  <div class="stories" id="stories">
+    <div class="story">
+      <span class="tag">Time</span>
+      <h3>Empate expõe insatisfação do elenco</h3>
+      <p>O empate contra o Internacional deixou à mostra o descontentamento do grupo com a queda de rendimento da equipe sob o comando do técnico Leonardo Jardim, que vive um momento de pressão no clube.</p>
+      <span class="source">Fonte: Bolavip Brasil</span>
+    </div>
+    <div class="story">
+      <span class="tag">Mercado</span>
+      <h3>Negociação por Thiago Almada tem prazo definido</h3>
+      <p>A diretoria mantém a postura nas conversas por Thiago Almada e já estabeleceu um prazo para as negociações, mesmo após o meia ter afirmado, em entrevista, que prefere outro destino.</p>
+      <span class="source">Fonte: Lance!</span>
+    </div>
+    <div class="story">
+      <span class="tag">Jogo</span>
+      <h3>Empate movimentado no Mineirão</h3>
+      <p>Fluminense e Cruzeiro ficaram no 1 a 1 pelo Campeonato Brasileiro. John Kennedy abriu o placar para o time carioca, e Matheus Pereira deixou tudo igual para os mineiros ainda no primeiro tempo.</p>
+      <span class="source">Fonte: Gazeta Esportiva</span>
+    </div>
+    <div class="story">
+      <span class="tag">Libertadores</span>
+      <h3>Classificação definida na Libertadores</h3>
+      <p>Depois do sorteio das oitavas de final da Copa Libertadores, o Fluminense já sabe seu adversário: o Independiente Rivadavia, da Argentina, em confronto de ida e volta.</p>
+      <span class="source">Fonte: fluminense.com.br</span>
+    </div>
+    <div class="story">
+      <span class="tag">Jogo</span>
+      <h3>Vitória histórica no Mineirão</h3>
+      <p>O Botafogo venceu o Cruzeiro por 1 a 0 fora de casa, resultado que encerrou um jejum de dez anos sem triunfos naquele estádio e aproximou o time do G-5 do Campeonato Brasileiro.</p>
+      <span class="source">Fonte: Botafogo Hoje</span>
+    </div>
+    <div class="story">
+      <span class="tag">Jogo</span>
+      <h3>Empate sem gols contra o Vitória</h3>
+      <p>Em casa, no Nilton Santos, o time alvinegro pressionou o adversário e criou chances claras, mas não conseguiu converter em gols, terminando a partida em 0 a 0.</p>
+      <span class="source">Fonte: Botafogo Hoje</span>
+    </div>
+    <div class="story">
+      <span class="tag">Jogo</span>
+      <h3>Derrota mantém jejum fora de casa</h3>
+      <p>O Vasco perdeu por 1 a 0 para o Vitória, com gol de Renato Kayzer, resultado que estende a sequência sem vitórias como visitante no Campeonato Brasileiro.</p>
+      <span class="source">Fonte: Vasco Notícias</span>
+    </div>
+    <div class="story">
+      <span class="tag">Time</span>
+      <h3>Técnico aponta falta de confiança do elenco</h3>
+      <p>Pedro Emanuel analisou a derrota para o Vitória, destacou a falta de confiança do grupo no momento atual e afirmou acreditar na evolução da equipe nas próximas rodadas.</p>
+      <span class="source">Fonte: Vasco Notícias</span>
+    </div>
+  </div>
+  <!-- STORIES-END -->
 
   <div class="adslot">
     <!-- Big Four - Anúncio Principal -->
@@ -173,11 +232,11 @@ const DATA = {
     theme: { bg:"#8C1116", text:"#F3EFE3", sub:"#E7E0CC", accent:"#C89B3C", line:"rgba(243,239,227,0.2)" },
     dot: "#1A1A1A",
     stories: [
-      { title:"Flamengo ainda depende apenas de si para ser campeão brasileiro; veja contas - GE", link:"https://news.google.com/rss/articles/CBMi3AFBVV95cUxNdmlmTC1icE0zWHQ0cE1uTnRJWmdqelhQXzNBcGdZeXFNa2t2QWpoZnp5Sl9zQ0Y0eUZ0TzBwQ25OVUdBMjFJbmVmbm5vLVRPc191X2VVdk50VU9PX3pCcnRWeEd0aHVhSjdTcm5Zc1EyMlY2blhYSkx0RFh1dXpWTlgyM2ZISlRlYmdjb3psZ2M1ZUc0S0F2cndjcEVrNDN0SHIwV2FaNUdmd2UxQjZ0dm9OQ2xKLW5GSWdxVmhYNmhwSmtsNmVkRlRXcTdUTW5JZG95OUNHSkF4NmQ50gHrAUFVX3lxTE1ad0JhWEh3TkM0NnVKMjBHRk9NRDBxZzRHeEZCcDhodGtyVDdsVThYM2tJaV9vQ1BfLWwxS3E4V0JWa2pGWnNIMWh6anE1WEtlUjlqY0tJN3N1MXo3b3dCOFM2Qk5uY21ubjJzU0JoNXdWOFNCZVNLSXlYVElGMEFNMGtQckFOQlRTXzJiX2ZhODVIWjBiWlhLN1FFMUE1bzByR2I2TWtrQThJSzBPa0djdllDazhzckgwNVZpVXFkcVo2QUtLWGc0SnRuTGpCcDlsaW4yNEE4ckVSaVVock9rcGcydzhJLVJMcGs?oc=5", source:"GE" },
-      { title:"Denílson critica Flamengo e elogia o Palmeiras: &#x27;Tem uma questão&#x27; - LANCE!", link:"https://news.google.com/rss/articles/CBMiqgFBVV95cUxQMnYtZlc4MTYtTGxuS1NUd1FETnpJWXZVQms4Y3dZODlxV0gwNm1EVTlGX0JkYTg3bnkyTnkzNHpiblBDS0wwT2dNNmdIRGs2Z3VoMXpvQzZRM2ZKTFFqS0pQXzdqLXRXV0lSTmxnNjB5YnpWRDFxaG5hSi1Fd1lfUVFhSlpyMER4ZWRTU0VraG9VeWF1TUlhSEpxTGFrQ0FUNzFGaFVMYWRpdw?oc=5", source:"LANCE!" },
-      { title:"Flamengo tem plano para reduzir distância do Palmeiras em vendas da base - UOL", link:"https://news.google.com/rss/articles/CBMi3AFBVV95cUxNTVZCQ0xXTjdxOGJwSDZZWlI5LVlHem5YM0VNUGY2RWIwaEdJTjR1WWpzYkktVG1ib0x0UnF5cFdYZ29tSmdjbUlScUIzOXBKWTZ3b3J5TXBBYUlCbUV1a1N3ZmFPLVFEMnlLeWx0SENCWGZUM0lhenFtWUpWZ0wzU3JKaTRKejR4c2d6bkhybnlpYjdnYlRCYjlZMlBLRkM1OGRCbzM0VVEtazdncmZxWGp3cF9uX0V4VEZ0b2w0MFc5dmpETGFCdTBlcTdEbnBDc296UENrN0RCUEdS?oc=5", source:"UOL" },
-      { title:"Palmeiras ou Flamengo? Veja qual time tem a maior probabilidade de ser campeão brasileiro - Terra", link:"https://news.google.com/rss/articles/CBMioAJBVV95cUxQWjJEQjBRaTdvM1FLMWRVbmZzX0tkdzh5RHg0VTZwaVc4LU5kdzdrOG5Xd3NVMmdvUWlQSHdva3BENUc5RURXR3RnbmFLUmU3M1hGOVhUMHk5SmRubVBvQTZxWEl2RzZNajl1Y3NKbzZsVmNISVRUM3VGRUxFekV1Z1otdE9WdTNVZnQ1N3RjcHY1cXkxcUZCdDc2NkFMcHdLU0VNNVZXLVIwQ3NpcVFSU1lIOXFNbFItcEFoSTMwOXRHZlMtYzBBYTc1OGFiYXBjeEwydFA4RW5wblZFUFpJNkhjRDIwa1F2TnBVNWVpRGlkNVpYSWlmeVY3NlNIRUpMZ3VBMnM5bnpKdXZrNUpFazRUa0d5d1JaRTR4SmFHdks?oc=5", source:"Terra" },
-      { title:"Evangélicos são confundidos com torcedores do Flamengo e têm ônibus apedrejados em BH - AutoPapo", link:"https://news.google.com/rss/articles/CBMitwFBVV95cUxOMDk2dFEycHFpR1JGdkUwNHhtcnd2VWoxU1N0Ni02U3VZRFFsbU1yekR1N3VwRENmY2YxNTBSbGdGUUtjbE1oRGFKdjNLN3VTYVVqUEFvVjJ4ak5ocEdLaklzdXRPS00wQmNTMzE0SlZDeTBRQ2Y0OHRKQ0lqeGRmSTRJMkJSaHRpWUFpaHpRUlZvRVlZRTBlVTdlaC1TUlVGcTZyc0dvV2k0SFRJWFFaQ3ZKUHFtY3c?oc=5", source:"AutoPapo" }
+      { tag:"Time", title:"Empate expõe insatisfação do elenco", text:"O empate contra o Internacional deixou à mostra o descontentamento do grupo com a queda de rendimento da equipe sob o comando do técnico Leonardo Jardim, que vive um momento de pressão no clube.", source:"Bolavip Brasil" },
+      { tag:"Mercado", title:"Negociação por Thiago Almada tem prazo definido", text:"A diretoria mantém a postura nas conversas por Thiago Almada e já estabeleceu um prazo para as negociações, mesmo após o meia ter afirmado, em entrevista, que prefere outro destino.", source:"Lance!" },
+      { tag:"Mercado", title:"Jogador reserva pode deixar o clube", text:"Um lateral que hoje é reserva na equipe despertou o interesse do Peñarol, do Uruguai, e pode ser negociado ainda durante esta janela de transferências.", source:"Bolavip Brasil" },
+      { tag:"Mercado", title:"Clube inglês consulta situação de goleiro", text:"Um clube da Inglaterra fez contato para entender a situação de um dos goleiros do elenco, mas a diretoria rubro-negra afirma não ter intenção de abrir negociações no momento.", source:"Bolavip Brasil" },
+      { tag:"Opinião", title:"Felipe Melo analisa clássico contra o Palmeiras", text:"O ex-jogador comentou a estratégia esperada para o novo confronto entre Flamengo e Palmeiras, destacando os pontos de equilíbrio entre as duas equipes na temporada.", source:"Lance!" }
     ]
   },
   vasco: {
@@ -185,11 +244,11 @@ const DATA = {
     theme: { bg:"#141414", text:"#F3EFE3", sub:"#E7E0CC", accent:"#C89B3C", line:"rgba(243,239,227,0.18)" },
     dot: "#ffffff",
     stories: [
-      { title:"Diego Souza, ex-Grêmio e Vasco, tem data para estrear em novo clube aos 41 anos - NSC Total", link:"https://news.google.com/rss/articles/CBMitAFBVV95cUxOMUF0Z1J2dmNzajRzQ0RjRVVya2c1RkZQb1kyRTF5Q0xESUh1N2pSREp1N0c5ZW9DaTd1RllhNURaQ0pHSTdJUU40emI3UzJMTmtJZXAyUVBjX2ZzNkMzQ0hLbjQwaHJIc0oxc29MZWtaZW4xVGhPOXE2MW1yTUZhOFB2aENTaHl4Y1cwZmdzSjVpMXRkWDA3RkNYeUphMnI1N1V6cVU4NnpjUmlGSjY5SFo4WkU?oc=5", source:"NSC Total" },
-      { title:"Departamento de futebol busca soluções enquanto aguarda uma decisão judicial - SuperVasco", link:"https://news.google.com/rss/articles/CBMiwgFBVV95cUxOT0V0QmRTSHQxdk85QUJQN3kxcXp1UnRpY0RvUmduT0Mxc09OLTVMUGdJWkwwaXVFSExVMlI4MXBtOElkQ0pGVGtjWnZGV2g1SG1yVHp0a0ZyZjVrTzE0RDc4SUU3VG1yb1Q1MnhUNy1rbHRHXzN6NUE4T0dfcGQ1MHZxZGpRVkRFb0ZqdmVPZ0ZHR0N2MWFvU0hzLVE5MHZEcFdCWjlnSmgtSHdQblVTak56N3pweDg5WHpYZENZMkpGd9IBxAFBVV95cUxOTzZLZXd6NUhKWWt5SWNwNXZjSFFPQ01OOC14MVEwd1hBOHZqb29LWk1pQnZYQ2FaaDhoUXBOUDhKMWFTMUd0bGhrbnZBZjNYVHFaR09NZVJRdnlSck5TVTljcmljQmxudGZHX1lLR2tZcTk5RENkbXBxM09VazQ2WUV1OGF5TVNXQksxVkxBbjlWbEdfWVpyV0FESUZjRXg4N1NwS3NRZTByRGpBTTM0aGFCbm0zalExWkZORktMbFZDZTNN?oc=5", source:"SuperVasco" },
-      { title:"Palmeiras goleia Vasco e abre vantagem na liderança do Brasileirão - CNN Brasil", link:"https://news.google.com/rss/articles/CBMiuAFBVV95cUxPdTVKbEF3dDZ1SV9MdFI3dlJFcG9WRnNJR1NFRjBneURTZmlrSTU4NGxLU1VORjVzT1dudS1ydnh3Sy0tWXBXNmhuUXJ1eWVkMFc0T1ozX2tMUWlsVjRoMkstRVdVUVFBWDVLNWtNQ1V4NGNvcmdxSEJ3bjVvMkZfMFpORGM1QTBoNHQxRUt3NHR5UEVRTzdkT3dzenQ5TU5qTm5iRk5mdERkTk5WSFRDQVBTXzRKZDV6?oc=5", source:"CNN Brasil" },
-      { title:"Pedro Emanuel manda recado em derrota do Vasco: &quot;Futebol é gol&quot; - Terra", link:"https://news.google.com/rss/articles/CBMi3wFBVV95cUxPbno1UHVBTU1uNE5kMTRrRzdBemM0OFFoWmpZbFFrMkNwSnozMEdZcU40b2tGREJQNmZLNHNaZ3ZJSFBya2t5RWVxRG42NE9oQmlsLVV4clpjd2M1LTZDb0hmalNuU0xBYmtybnlZYjA1eVZiZmhlcnhDR2haYTRRS01DNVVHdldXbEF2Y2FqYWhaZTdPWUNMc2JTNEQ4OHJZSlJDcHRFWG5Xb19iMHljMWd6OGJDN0Rhd3B5Tmh1MFpZY01Tc0Q1VGxOOFhaTERZV281S0ZiRkZUaU9xdTBF?oc=5", source:"Terra" },
-      { title:"Palmeiras x Vasco da Gama – Onde Assistir, Horário, Escalações e Estatísticas 23/08 - Gazeta Esportiva", link:"https://news.google.com/rss/articles/CBMingFBVV95cUxQQW90emdQeUc5VVVOeXBYemxOenU0TEF6TWt6NmhWMjlCb3ZrekdHREd2LUhFTVZjUlZiWHBYcFc2eVFDZUdfWk9zMzV3MlBYMHRUV2t0WXZNcmxoUkdSOXlfYkg4WG9BWGVLcDhWQnZnNVRQdERkVFNSTlZBUzFUQkNBSXpnel9hRHJJTVMzc0p2bzNEc0hwOVROU2Q1QQ?oc=5", source:"Gazeta Esportiva" }
+      { tag:"Jogo", title:"Derrota mantém jejum fora de casa", text:"O Vasco perdeu por 1 a 0 para o Vitória, com gol de Renato Kayzer, resultado que estende a sequência sem vitórias como visitante no Campeonato Brasileiro.", source:"Vasco Notícias" },
+      { tag:"Time", title:"Técnico aponta falta de confiança do elenco", text:"Pedro Emanuel analisou a derrota para o Vitória, destacou a falta de confiança do grupo no momento atual e afirmou acreditar na evolução da equipe nas próximas rodadas.", source:"Vasco Notícias" },
+      { tag:"Diretoria", title:"Diretoria libera investimento em reforços", text:"A diretoria recebeu aval para investir até R$ 100 milhões na contratação de reforços, com o clube avaliando principalmente a chegada de um atacante de referência.", source:"Vasco Notícias" },
+      { tag:"Jogo", title:"Clássico contra o Fluminense na Copa do Brasil", text:"O time se prepara para enfrentar o Fluminense pelas oitavas de final da Copa do Brasil, em confronto direto entre dois dos quatro grandes do Rio.", source:"Vasco Notícias" },
+      { tag:"Mercado", title:"Negociações em andamento no ataque", text:"O clube avalia negociações envolvendo dois atacantes por empréstimo e monitora outros nomes no mercado internacional para reforçar o setor ofensivo.", source:"Vasco Notícias" }
     ]
   },
   botafogo: {
@@ -197,11 +256,10 @@ const DATA = {
     theme: { bg:"#ffffff", text:"#1A1A1A", sub:"#4B4B44", accent:"#B5121B", line:"rgba(181,18,27,0.25)" },
     dot: "#B5121B",
     stories: [
-      { title:"Athletico-PR aproveita &quot;apagão&quot;, vence e aumenta a crise no Botafogo - CNN Brasil", link:"https://news.google.com/rss/articles/CBMitwFBVV95cUxPLURPNk1leGE4bmJuci1lX0o4LVBZRmRhQjZrSlJqMEZfbmhoNzNHYmtRNnlmSHVXXzJJTmlnY2Z4RURPY2NaM3dXdEVzZ1pvYU9CWnFuc1FMWU1WNXdicEZMQlBHMlNaOTFDNDNTclJrVUg0Tl94d2swVjNiUWRQYXhFdlhrYzVkRUhoVmFlS0xvaUotQUtXOXdsZzVCdVBWOEk4amNvN3BhV3hpenFXZGZZaVpTU2c?oc=5", source:"CNN Brasil" },
-      { title:"Botafogo faz oito saídas na janela; saiba quanto o clube economizou - Terra", link:"https://news.google.com/rss/articles/CBMi6gFBVV95cUxPMnFlSHZySlBqTEZaSnJYenlwUlc5LURVdlZMR19SbFg1UWk1S0g1ZmF3VXFydkhQT2ljMl82VWpwVWxzbGFfb2dzcjdFR0RGR2E1MVpPVWFpRFJwN2pUb1luYzFKSUN6bkdlY2tJV2dQeHE1QXRnSUV0QjdWQmNoTFVBaXQ1OUtBMHdvMWdyTW4xTWVfRUxkMDkyc0FEQTJfRXVZVkVUbmh3RkJ1NmNMTXdWRGhpNVd4eDNkS003cDAtNWFGcHdxZXdTSUdMcEdjVXU4VC1yUl82UVBoOV81NElJVWp2aTlQWEE?oc=5", source:"Terra" },
-      { title:"Botafogo deve manter Rodrigo Bellão para sequência decisiva - O Dia", link:"https://news.google.com/rss/articles/CBMivAFBVV95cUxQOEJEdmYxSFVUc1pINHd4WHU5ZG0zMFk2dkJqdFcxV0xoRklwN2oyYThQaTRaRFJfTTRydmdoVHc4Wkd6RHFXeldFRmxCeXVmY21KVEltb2tzemhaTURWREMzLTFlS1dEdDBDRW8welh1MTJlM0dqZnladFphakkxMzU2cjJIOHRTT1pGZkxNWERHRzlnbk1MWm5aaUtLMm54VWtwdHY1ZlpmT2h5T0RWRXlaSHlqcU1WbFNZRtIBwgFBVV95cUxOTEVaalR4S2E0Mmx3U1JIOFdiNWM2QjYybWlJcDRpRVNmTzg3OFZZbm4wSjQ4WE5TaER0V0tuZlNiYWlvRkNjTHhIMUlGOF9rRnYzSjgyNVpGa0ZEMGZ0RDVZUUFHdTBsNTU1SXk2d1lsdnhNMk94VFFxWTdJdWJmWWRULV84QjBmbEZxVWNhUTdSY3Zvb1pVb2J3ajhxdTNSVk51WkhnMHhxTXFzM2QxODFQS2VEaDFKSG1xUWMtV1RfZw?oc=5", source:"O Dia" },
-      { title:"Sport contrata volante Patrick de Paula, ex-Palmeiras e Botafogo - GE", link:"https://news.google.com/rss/articles/CBMi4gFBVV95cUxNQmVaVFFrbUxBT2prRGp2UFFZTkFWdGFBd3V3N25kZ2p4Rkt2Z0I4alRDY0stSFlMU3RGbXlGbVRKbkl0WHlZLVpHVF9qUVFmNjFlZ3pndERoZmpLNVR6NmJUYmZPMUlYNzdGZWtwNWxvc3JlMDVVRWozdkpwX3hVTVFUTDAxdFMyUGJ5eW9KOXRDYWxvUXpKUV9xSHpJejVEN09zUVdpemlISWo3cUQ4OEV0dXZSbHhhZll2T0JfbHAzV04wblhVZVJBSjJ2VnM2N21tajUtSGxHdnZIMmlOVFBn0gHwAUFVX3lxTE5WTkRqWTN5dVNkdU1WelljMlpCQmpveGI4QjRpY0pFUVdzcldFdVpTZWxVc3dBUFpmR0hFcmxvbTd3UVh3bUROQ1VUbTFSeC1YZE5lUU1JbVJ6MEltMkpmVk1GVDRSUGFqczNZZkZsUmdJSHFvd005bmQ0S0RneTBrdmVLeGdVUFNpdDU3YUtnMG5kQU9OY3lvTUhwQ1labnN6RkJBZ25OR1UtYi00TUVpUy1Vc2hzMTN1S2lOU3pqS2ZCVEZyQjFDaEZrUi03bGdCX3NXWDMzeFZnamw0ZzloRjNhMzlZYmhXUXVidXV0dg?oc=5", source:"GE" },
-      { title:"Campeão da Libertadores por Palmeiras e Botafogo fecha com novo time - LANCE!", link:"https://news.google.com/rss/articles/CBMitgFBVV95cUxQTnBsTHl6a2dGcVJNbTFVazlWQnZHSmNfQXZudFFKQlhENkExMXRoTmRMSGVIbDRVYUdpN2RGbnpsV3ZZMGtha25TZ1EtcmJ6MTdvVDhfcUI4NDZOSVlPY2w1UHJMU2Y3Z0x2WnlwNXlTR29rTlFVRDZQT09iNHRXU2kzTUk1c1hJYWVldjRLQlo1bkhGM0xQT0gyWEFmRGE1QXdJbzdURDNUdFZuc1BPeVhiZWxYUQ?oc=5", source:"LANCE!" }
+      { tag:"Jogo", title:"Vitória histórica no Mineirão", text:"O Botafogo venceu o Cruzeiro por 1 a 0 fora de casa, resultado que encerrou um jejum de dez anos sem triunfos naquele estádio e aproximou o time do G-5 do Campeonato Brasileiro.", source:"Botafogo Hoje" },
+      { tag:"Jogo", title:"Empate sem gols contra o Vitória", text:"Em casa, no Nilton Santos, o time alvinegro pressionou o adversário e criou chances claras, mas não conseguiu converter em gols, terminando a partida em 0 a 0.", source:"Botafogo Hoje" },
+      { tag:"Bastidores", title:"Bastidores marcados por crise financeira", text:"O clube enfrenta uma disputa envolvendo uma crise fiscal estimada em R$ 210 milhões, além de discussões sobre o retorno de John Textor à gestão e uma disputa judicial em curso.", source:"Botafogo Hoje" },
+      { tag:"Mercado", title:"Mercado da bola movimentado", text:"Reportagens recentes mencionam as saídas de Almada e Danilo entre os temas mais discutidos no mercado da bola do clube, junto com possíveis contratações para reforçar o elenco.", source:"Botafogo Hoje" }
     ]
   },
   fluminense: {
@@ -209,11 +267,11 @@ const DATA = {
     theme: { bg:"#1F4D36", text:"#F3EFE3", sub:"#E7E0CC", accent:"#F2A6A0", line:"rgba(243,239,227,0.2)" },
     dot: "#7A1E3C",
     stories: [
-      { title:"Entenda os motivos para a efetivação e os planos do Fluminense para Marcão - GE", link:"https://news.google.com/rss/articles/CBMi3gFBVV95cUxOV2kyNmtCQWJ0Ti1SMHc1YVJINDNaQ3FYZjZ6S0JnbTVuNGtjWlFNR2lIdGpGdEhCR0VtRDFNQkJpOTRQSzAtdXgtQkVPcTlNNEMtV0kwZ1E5MHZxaHZrTkxQcmhHdVhTUUd6TzhUWHFsdVpxQUQyZU1SZ1VaMk5sbzR1aG1JckFYT3FLdmplTEtqYTMwOUF6QlRXTEVRNHhFREZLVlEwQmdUaWVjZWRwSFhxRkJXWTFTc29xODVvTjRCWDhtbHBxVk04UGlBMVd4Y3Bya0Nibm9RNm5zZVHSAewBQVVfeXFMUEJmWHhLUEVKckxWWEkyX1d1Qm9OQ0M5TUJLOEZJZU1jdmRPMkpsSVR6b2phOG1LdTJOV190N2VJU0I2VGpTN1Q2ci00OWFpMmY4ZjZyRG52S1N4WXBjMzNLRzBJc1FTUjZDUnlhWHc5eHdKOGt1V2dzRzB1SngxT0FCNFZoUWFQYTJBWkRXLTBmU0xfREMwTUt4U2QxeFNNMWc2cUpMMXpUVEtwZmN6UmR2MlkyLVdWem5vbGY0YlFoTmUyYkQ3blhnV1VVUVZGdl9XQmhPSmhaMVh5QjdNTEktWVBVbUlVd1locmI?oc=5", source:"GE" },
-      { title:"Volante do Fluminense errou apenas um passe contra o Remo; veja estatísticas - netflu.com.br", link:"https://news.google.com/rss/articles/CBMipAFBVV95cUxOR1otLU8wR1RTWlRKTzc5QnRiQ3RybXF4bkVuTENlODdyUmxJN0dWN2t1MHA1T0M3blo2c1NIT0VMeGU3S1B0Y1hqU0dGeHB4dDN0X3dOZTd0NmR4QU9XWkc1X3V1M1pxSmtHclRVaUt0Z01ILWEyeTZzS1h0Nkx6Ym5Eb0FiMnE5alpyaEI0SkphU1lvM2o5bXhzWlJOWTJvTVhsRQ?oc=5", source:"netflu.com.br" },
-      { title:"Fluminense inicia semana cheia para treinos com reforços - LANCE!", link:"https://news.google.com/rss/articles/CBMingFBVV95cUxPcXFLOFVFN0ZZXzZJUlZNTUExWDBpWkF3TTlaRnY5cTNRUWVrdUxSOWNFVjBWMENHaGNJNGJxV3doaHlpWkN4WDFUVzJ0UWpRM0s2M2FjRVJQZVY5aHQ1SmNNVFROOG82OVFabV9aNDZPdk1rUUZMMjJlQzF2eF9jMWdVSFlZMUFWTERqWWJhUm5KY09GRVF0ZUhFSWxXZw?oc=5", source:"LANCE!" },
-      { title:"Marcão conta com &quot;auxiliar&quot; Thiago Silva para corrigir bola aérea do Fluminense - GE", link:"https://news.google.com/rss/articles/CBMi4gFBVV95cUxNaVBIemlXekp6SXEtVWtTQ3ZlZ2l5WEJ4QU5BbGxWSkE4SFVoVFRmYUl5NlV2Z0J2bzE4UHdMZnBZVkpmczZub3oyVmJuUjFpVFFUNFN1TU4xaWRqUnVJLVZDUmFpTGVYdG9feDR5aHNJdHE5WG9tUERRSGk0VWE2R0NUUEViVkV6aG5HenpsdmQ0YWlOUjBfMnJxRG1NVGx5TDl5NzZaem1EaHVrZW9mTm9BZU0xY245VmhCQ2VHRHhlVlpZUHNYZHhCTEY2cS1iQ2NQa2Q5Y0w0OUhlckZYTmNR0gHwAUFVX3lxTFBBQjAxbmpGamRJanFUcVlJdU1uOTZPQUJyc2g2bTVwV1VvNlZ5VXZKOC1PcjlNbFdnSTA5LUM1M1AwZmxHODJSS2wxWXhfSm12Sm56YTA3S0V2UW1PdF90X2hyenJFb25oWW9zaW5zY0VybS1ZQWRMdUFZYUhlcnFxdmNTN1RXM09KSGx2bDlEZVkzRzJzdWNwejRWS3NaOG5ZN2dZbF9hbEpSUGU3NTJzSi1GaHFPMXVWRk41Ynd2MXRKNGxwYnB2UnZ3ak9HZXozcmNwZDQtaEJ5UmZQWG9vSTByX0tJX2MzZzdta18tdQ?oc=5", source:"GE" },
-      { title:"Com 56 anos e vendendo camisinhas, ex-Fluminense e Palmeiras vive rotina inusitada longe do futebol - NSC Total", link:"https://news.google.com/rss/articles/CBMi0AFBVV95cUxOTkI1cUlOTXAwYzROTUxNck1VS1lkY1VpNlp6X2NHSnRtU2tVWnNzN2ZXLXltSDFuQVFVWEM1Ynk4WUVkWXZlU1pwWFdkcHN5TkpaM2xrZXpveDJIQVNDNzA0S0RLU2NkVDFXOXJsZXM0bEJnblF4V2RYTDgyVTZOTXh3ZjlkSmdNaUdZSVNCNHRyOWV2Y056T0MxS0x4eGpQemxsNm1RNXotRjl5NE5sSUNGc29HOHcxTU1kaXlnR0FjMVUwdHV5bDVYU25wR0Rk?oc=5", source:"NSC Total" }
+      { tag:"Jogo", title:"Empate movimentado no Mineirão", text:"Fluminense e Cruzeiro ficaram no 1 a 1 pelo Campeonato Brasileiro. John Kennedy abriu o placar para o time carioca, e Matheus Pereira deixou tudo igual para os mineiros ainda no primeiro tempo.", source:"Gazeta Esportiva" },
+      { tag:"Libertadores", title:"Classificação definida na Libertadores", text:"Depois do sorteio das oitavas de final da Copa Libertadores, o Fluminense já sabe seu adversário: o Independiente Rivadavia, da Argentina, em confronto de ida e volta.", source:"fluminense.com.br" },
+      { tag:"Jogo", title:"Desfalques e retornos para o clássico contra o Vasco", text:"O time recupera o meio-campista Jemmes para o duelo com o Vasco pela Copa do Brasil, mas segue sem poder contar com o zagueiro Thiago Silva e com Freytes, ambos em recuperação.", source:"Lance!" },
+      { tag:"Time", title:"Sequência irregular chama atenção", text:"Reportagens recentes apontam que o Fluminense iguala uma sequência de resultados negativos que não se via havia 34 anos, o que tem pressionado a comissão técnica a rever ajustes táticos.", source:"Lance!" },
+      { tag:"Time", title:"Menor uso da base sob o novo comando técnico", text:"Levantamentos mostram que o Fluminense tem utilizado menos atletas formados na base do clube desde a chegada do técnico Zubeldía, uma mudança de perfil em relação às temporadas anteriores.", source:"Lance!" }
     ]
   }
 };
@@ -242,39 +300,40 @@ function renderStories(list){
   list.forEach(s => {
     const div = document.createElement('div');
     div.className = 'story';
-    div.innerHTML = `<span class="tag">${s.source}</span><h3>${s.title}</h3><a class="source" href="${s.link}" target="_blank" rel="noopener">Leia a matéria completa →</a>`;
+    div.innerHTML = `<span class="tag">${s.tag}</span><h3>${s.title}</h3><p>${s.text}</p><span class="source">Fonte: ${s.source}</span>`;
     storiesEl.appendChild(div);
   });
 }
 
-function selectTeam(team){
-  document.querySelectorAll('.pick').forEach(b => b.classList.toggle('active', b.dataset.team === team));
-
-  if(team === 'todos'){
-    applyTheme(DEFAULT_THEME);
-    clubTitle.classList.remove('show');
-    sectionLabel.textContent = 'Os quatro grandes — últimas notícias';
-    introText.textContent = 'Acompanhamento diário de Flamengo, Fluminense, Botafogo e Vasco da Gama, com notícias reunidas de fontes esportivas confiáveis como Lance!, ESPN, Gazeta Esportiva e os canais oficiais dos próprios clubes.';
-    const all = [].concat(DATA.flamengo.stories.slice(0,2), DATA.fluminense.stories.slice(0,2), DATA.botafogo.stories.slice(0,2), DATA.vasco.stories.slice(0,2));
-    renderStories(all);
-    return;
-  }
-
-  const club = DATA[team];
-  applyTheme(club.theme);
-  clubTitle.classList.add('show');
-  clubName.textContent = club.label;
-  clubDot.style.background = club.dot;
-  sectionLabel.textContent = club.short + ' — últimas notícias';
-  introText.textContent = 'Notícias sobre o ' + club.label + ', reunidas de fontes esportivas confiáveis.';
-  renderStories(club.stories);
-}
-
+// IMPORTANTE: só troca o conteúdo se o usuário realmente clicar em um time.
+// Na carga inicial da página, o bloco STORIES-START/STORIES-END já está
+// visível no HTML puro — não chamamos renderStories() automaticamente aqui,
+// então quem não roda JavaScript ainda assim vê as notícias.
 document.querySelectorAll('.pick').forEach(btn => {
-  btn.addEventListener('click', () => selectTeam(btn.dataset.team));
-});
+  btn.addEventListener('click', () => {
+    const team = btn.dataset.team;
+    document.querySelectorAll('.pick').forEach(b => b.classList.toggle('active', b.dataset.team === team));
 
-selectTeam('todos');
+    if(team === 'todos'){
+      applyTheme(DEFAULT_THEME);
+      clubTitle.classList.remove('show');
+      sectionLabel.textContent = 'Os quatro grandes — últimas notícias';
+      introText.textContent = 'Acompanhamento diário de Flamengo, Fluminense, Botafogo e Vasco da Gama, com notícias reunidas de fontes esportivas confiáveis como Lance!, ESPN, Gazeta Esportiva e os canais oficiais dos próprios clubes.';
+      const all = [].concat(DATA.flamengo.stories.slice(0,2), DATA.fluminense.stories.slice(0,2), DATA.botafogo.stories.slice(0,2), DATA.vasco.stories.slice(0,2));
+      renderStories(all);
+      return;
+    }
+
+    const club = DATA[team];
+    applyTheme(club.theme);
+    clubTitle.classList.add('show');
+    clubName.textContent = club.label;
+    clubDot.style.background = club.dot;
+    sectionLabel.textContent = club.short + ' — últimas notícias';
+    introText.textContent = 'Notícias sobre o ' + club.label + ', reunidas de fontes esportivas confiáveis.';
+    renderStories(club.stories);
+  });
+});
 </script>
 
 </body>

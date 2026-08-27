@@ -1,27 +1,28 @@
 """
-Gera a "Retrospectiva da Semana" do site Big Four usando a API da Anthropic
-(Claude) para escrever um texto de análise original, e atualiza a página
-retrospectiva.html.
+Gera a "Retrospectiva da Semana" do site Big Four usando a API gratuita do
+Google Gemini para escrever um texto de análise original, e atualiza a
+página retrospectiva.html.
 
 Como funciona:
 1. Busca as notícias mais recentes de cada clube (mesmo feed usado pelo
    update_news.py).
-2. Monta um resumo dessas manchetes e manda pra API da Anthropic, pedindo
+2. Monta um resumo dessas manchetes e manda pra API do Gemini, pedindo
    pra escrever uma retrospectiva em tom de coluna de opinião, uma seção
    por clube.
-3. Substitui o bloco "RETRO-START ... RETRO-END" e a data dentro de
-   retrospectiva.html.
+3. Substitui os blocos "RETRO-START ... RETRO-END", a data e o anúncio
+   dentro de retrospectiva.html.
 
 IMPORTANTE:
-- Precisa de uma chave de API da Anthropic. Crie uma em
-  https://console.anthropic.com, e configure como variável de ambiente
-  ANTHROPIC_API_KEY (ou como "Secret" no GitHub Actions).
-- Cada execução consome uma pequena quantidade de créditos da API
-  (geralmente poucos centavos, já que roda só 1x por semana).
+- Precisa de uma chave de API do Google Gemini (gratuita, sem cartão de
+  crédito). Crie uma em https://aistudio.google.com/apikey, e configure
+  como variável de ambiente GEMINI_API_KEY (ou como "Secret" no GitHub
+  Actions).
+- O plano gratuito do Gemini cobre bastante folga para rodar 1x por
+  semana (o limite diário do modelo Flash é de milhares de pedidos).
 
 Uso local (para testar na sua máquina):
     pip install feedparser requests
-    export ANTHROPIC_API_KEY="sua-chave-aqui"
+    export GEMINI_API_KEY="sua-chave-aqui"
     python update_retrospective.py
 """
 
@@ -41,7 +42,7 @@ CLUBS = {
 
 HEADLINES_PER_CLUB = 8
 HTML_FILE = "retrospectiva.html"
-ANTHROPIC_MODEL = "claude-sonnet-5"
+GEMINI_MODEL = "gemini-2.5-flash"
 
 
 def fetch_headlines(query: str, limit: int = HEADLINES_PER_CLUB):
@@ -83,37 +84,38 @@ Regras:
 """
 
 
-def call_anthropic(prompt: str) -> str:
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
+def call_gemini(prompt: str) -> str:
+    api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         raise RuntimeError(
-            "Variável de ambiente ANTHROPIC_API_KEY não encontrada. "
-            "Crie uma chave em https://console.anthropic.com e configure-a "
-            "como variável de ambiente (ou Secret do GitHub Actions)."
+            "Variável de ambiente GEMINI_API_KEY não encontrada. "
+            "Crie uma chave gratuita em https://aistudio.google.com/apikey "
+            "e configure-a como variável de ambiente (ou Secret do GitHub Actions)."
         )
 
+    url = (
+        f"https://generativelanguage.googleapis.com/v1beta/models/"
+        f"{GEMINI_MODEL}:generateContent?key={api_key}"
+    )
+
     response = requests.post(
-        "https://api.anthropic.com/v1/messages",
-        headers={
-            "x-api-key": api_key,
-            "anthropic-version": "2023-06-01",
-            "content-type": "application/json",
-        },
+        url,
+        headers={"content-type": "application/json"},
         json={
-            "model": ANTHROPIC_MODEL,
-            "max_tokens": 2000,
-            "messages": [{"role": "user", "content": prompt}],
+            "contents": [{"parts": [{"text": prompt}]}],
         },
         timeout=60,
     )
     response.raise_for_status()
     data = response.json()
 
-    text_parts = [block["text"] for block in data.get("content", []) if block.get("type") == "text"]
-    text = "".join(text_parts).strip()
+    try:
+        text = data["candidates"][0]["content"]["parts"][0]["text"]
+    except (KeyError, IndexError):
+        raise RuntimeError(f"Resposta inesperada da API do Gemini: {data}")
 
     # Segurança: remove blocos de código markdown, caso o modelo os inclua por engano.
-    text = re.sub(r"^```html\s*", "", text)
+    text = re.sub(r"^```html\s*", "", text.strip())
     text = re.sub(r"```\s*$", "", text)
     return text.strip()
 
@@ -170,7 +172,7 @@ def update_html(retro_html: str):
 def main():
     all_headlines = {key: fetch_headlines(info["query"]) for key, info in CLUBS.items()}
     prompt = build_prompt(all_headlines)
-    retro_html = call_anthropic(prompt)
+    retro_html = call_gemini(prompt)
     update_html(retro_html)
 
 

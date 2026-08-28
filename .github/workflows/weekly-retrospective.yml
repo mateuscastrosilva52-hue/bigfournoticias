@@ -1,0 +1,36 @@
+name: Gerar retrospectiva semanal
+
+on:
+  schedule:
+    # Roda todo domingo às 09:00 (horário de Brasília = UTC-3, por isso 12:00 UTC)
+    - cron: "0 12 * * 0"
+  workflow_dispatch: {}
+    # ↑ isso permite rodar manualmente também, clicando em "Run workflow" na aba Actions
+
+permissions:
+  contents: write
+  # ↑ necessário para o robô conseguir salvar (commit) o retrospectiva.html atualizado
+
+jobs:
+  update-retrospective:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o repositório
+        uses: actions/checkout@v4
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Instalar dependências
+        run: pip install feedparser requests
+      - name: Gerar retrospectiva com IA
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python update_retrospective.py
+      - name: Salvar alterações no repositório
+        run: |
+          git config user.name "big-four-bot"
+          git config user.email "actions@github.com"
+          git add retrospectiva.html
+          git diff --quiet --cached || git commit -m "Retrospectiva semanal automática"
+          git push

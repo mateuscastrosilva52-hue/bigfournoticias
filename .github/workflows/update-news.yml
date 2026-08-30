@@ -1,34 +1,27 @@
 name: Atualizar notícias do Big Four
-
 on:
   schedule:
     # Roda todo dia às 09:00 (horário de Brasília = UTC-3, por isso 12:00 UTC)
     - cron: "0 12 * * *"
   workflow_dispatch: {}
     # ↑ isso permite rodar manualmente também, clicando em "Run workflow" na aba Actions
-
 permissions:
   contents: write
   # ↑ necessário para o robô conseguir salvar (commit) o index.html atualizado
-
 jobs:
   update-news:
     runs-on: ubuntu-latest
     steps:
       - name: Baixar o repositório
         uses: actions/checkout@v4
-
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
       - name: Instalar dependências
         run: pip install -r requirements.txt
-
       - name: Buscar notícias e atualizar o index.html
         run: python update_news.py
-
       - name: Salvar alterações no repositório
         run: |
           git config user.name "big-four-bot"
@@ -36,7 +29,7 @@ jobs:
           git add index.html
           git diff --quiet --cached || git commit -m "Atualização automática de notícias"
           git push
-          - name: Postar no Telegram
+      - name: Postar no Telegram
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}

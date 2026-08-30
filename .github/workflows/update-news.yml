@@ -36,3 +36,8 @@ jobs:
           git add index.html
           git diff --quiet --cached || git commit -m "Atualização automática de notícias"
           git push
+          - name: Postar no Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python post_telegram.py --mode news

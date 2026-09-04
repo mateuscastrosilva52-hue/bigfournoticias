@@ -328,9 +328,11 @@ function renderStories(list){
   list.forEach(s => {
     const div = document.createElement('div');
     div.className = 'story';
-    div.innerHTML = `<span class="tag">${s.source}</span><h3>${s.title}</h3><a class="source" href="${s.link}" target="_blank" rel="noopener">Leia a matéria completa →</a>`;
+    const summaryHtml = s.summary ? `<p>${s.summary}</p>` : '';
+    div.innerHTML = `<span class="tag">${s.source}</span><h3>${s.title}</h3>${summaryHtml}<a class="source" href="${s.link}" target="_blank" rel="noopener">Leia a matéria completa →</a>`;
     storiesEl.appendChild(div);
   });
+}
 }
 // IMPORTANTE: só troca o conteúdo se o usuário realmente clicar em um time.
 // Na carga inicial da página, o bloco STORIES-START/STORIES-END já está

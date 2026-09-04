@@ -1,24 +1,33 @@
 """
 Script que busca as últimas notícias de Flamengo, Vasco, Botafogo e Fluminense
-no Google News (RSS, sem necessidade de chave de API) e atualiza o index.html
-do site Big Four em DOIS lugares:
+no Google News (RSS, sem necessidade de chave de API para a busca) e usa a
+API gratuita do Google Gemini para escrever um resuminho ORIGINAL de 1-2
+frases para cada manchete — em vez de só linkar para a matéria externa.
 
-1. O bloco "DATA-START ... DATA-END" (usado pelo JavaScript quando o
-   usuário clica para filtrar por time).
-2. O bloco "STORIES-START ... STORIES-END" (HTML puro, já visível na
-   página sem precisar rodar JavaScript). É esse segundo bloco que
-   resolve a violação do Google AdSense de "tela sem conteúdo do
-   editor" — crawlers que não executam JS agora veem notícias reais
-   direto no HTML.
+Isso resolve o problema de "conteúdo de baixo valor" apontado pelo AdSense:
+antes, a home era basicamente uma lista de links; agora cada notícia tem um
+comentário próprio, escrito com apoio de IA a partir da manchete.
+
+O script atualiza o index.html em DOIS lugares:
+1. O bloco "DATA-START ... DATA-END" (usado pelo JavaScript ao filtrar por time).
+2. O bloco "STORIES-START ... STORIES-END" (HTML puro, visível sem JS).
+
+IMPORTANTE:
+- Precisa da mesma chave GEMINI_API_KEY já usada pela retrospectiva semanal
+  (não precisa criar uma nova — é a mesma configurada como Secret no GitHub).
 
 Uso local (para testar na sua máquina):
-    pip install feedparser
+    pip install feedparser requests
+    export GEMINI_API_KEY="sua-chave-aqui"
     python update_news.py
 """
 
+import os
 import re
+import json
 import html
 import feedparser
+import requests
 
 CLUBS = {
     "flamengo": {
@@ -54,6 +63,7 @@ CLUBS = {
 MAX_STORIES_PER_CLUB = 5
 STORIES_IN_HOMEPAGE_PER_CLUB = 2  # quantas notícias de cada time aparecem na home ("Todos")
 HTML_FILE = "index.html"
+GEMINI_MODEL = "gemini-3.5-flash"
 
 
 def fetch_news(query: str, limit: int = MAX_STORIES_PER_CLUB):
@@ -66,8 +76,6 @@ def fetch_news(query: str, limit: int = MAX_STORIES_PER_CLUB):
         source = "Google Notícias"
         if hasattr(entry, "source") and entry.source and entry.source.get("title"):
             source = entry.source["title"]
-        # O Google News às vezes deixa o nome da fonte no final do título
-        # separado por " - "; remove se bater com a fonte já identificada.
         if raw_title.endswith(f" - {source}"):
             raw_title = raw_title[: -(len(source) + 3)]
         items.append({
@@ -78,16 +86,72 @@ def fetch_news(query: str, limit: int = MAX_STORIES_PER_CLUB):
     return items
 
 
+def add_summaries_with_gemini(club_label: str, stories: list) -> list:
+    """
+    Manda as manchetes de um clube para o Gemini e pede um resumo original
+    de 1-2 frases para cada uma. Se a chamada falhar por qualquer motivo,
+    devolve as notícias sem resumo (o site continua funcionando normalmente).
+    """
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key or not stories:
+        for s in stories:
+            s["summary"] = ""
+        return stories
+
+    titles_list = "\n".join(f"{i+1}. {s['title']}" for i, s in enumerate(stories))
+    prompt = f"""Você escreve para um jornal esportivo carioca chamado "Big Four",
+que cobre o {club_label}.
+
+Para cada manchete abaixo, escreva um resumo ORIGINAL de 1 a 2 frases, em
+português do Brasil, explicando o contexto ou a relevância da notícia —
+não apenas repetindo o título com outras palavras. Se a manchete for vaga,
+comente de forma mais genérica em vez de inventar detalhes que não estão nela.
+
+Manchetes:
+{titles_list}
+
+Responda APENAS com um JSON array de strings, na mesma ordem das manchetes,
+um resumo por item. Não escreva nada fora do JSON, sem markdown, sem ```json.
+Exemplo de formato: ["Resumo da primeira notícia.", "Resumo da segunda notícia."]
+"""
+
+    try:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
+        response = requests.post(
+            url,
+            headers={"content-type": "application/json", "x-goog-api-key": api_key},
+            json={"contents": [{"parts": [{"text": prompt}]}]},
+            timeout=60,
+        )
+        response.raise_for_status()
+        data = response.json()
+        text = data["candidates"][0]["content"]["parts"][0]["text"].strip()
+        text = re.sub(r"^```json\s*", "", text)
+        text = re.sub(r"^```\s*", "", text)
+        text = re.sub(r"```\s*$", "", text)
+        summaries = json.loads(text)
+
+        for i, s in enumerate(stories):
+            s["summary"] = summaries[i] if i < len(summaries) else ""
+    except Exception as e:
+        print(f"Aviso: não consegui gerar resumos para {club_label} ({e}). Seguindo sem resumo.")
+        for s in stories:
+            s["summary"] = ""
+
+    return stories
+
+
 def build_data_block(all_stories):
     lines = ["// DATA-START", "const DATA = {"]
     club_keys = list(CLUBS.keys())
     for i, (key, info) in enumerate(CLUBS.items()):
         stories = all_stories[key]
         stories_js = ",\n      ".join(
-            '{{ title:"{title}", link:"{link}", source:"{source}" }}'.format(
+            '{{ title:"{title}", link:"{link}", source:"{source}", summary:"{summary}" }}'.format(
                 title=html.escape(s["title"]).replace("'", "\\'").replace('"', '\\"'),
                 link=s["link"],
                 source=html.escape(s["source"]).replace('"', '\\"'),
+                summary=html.escape(s.get("summary", "")).replace("'", "\\'").replace('"', '\\"').replace("\n", " "),
             )
             for s in stories
         )
@@ -111,7 +175,7 @@ def build_data_block(all_stories):
 def build_stories_html(all_stories):
     """
     Gera o HTML puro (visível sem JavaScript) com uma mistura de notícias
-    dos quatro times, igual ao que a view "Todos" mostra no JS.
+    dos quatro times, cada uma com o resumo original escrito pela IA.
     """
     mixed = []
     for key in CLUBS:
@@ -122,10 +186,12 @@ def build_stories_html(all_stories):
         title = html.escape(s["title"])
         source = html.escape(s["source"])
         link = html.escape(s["link"], quote=True)
+        summary = html.escape(s.get("summary", ""))
+        summary_html = f'\n      <p>{summary}</p>' if summary else ""
         cards.append(
             '    <div class="story">\n'
             f'      <span class="tag">{source}</span>\n'
-            f'      <h3>{title}</h3>\n'
+            f'      <h3>{title}</h3>{summary_html}\n'
             f'      <a class="source" href="{link}" target="_blank" rel="noopener">Leia a matéria completa →</a>\n'
             '    </div>'
         )
@@ -136,6 +202,8 @@ def build_stories_html(all_stories):
         "    Este bloco é escrito diretamente pelo update_news.py a cada execução.",
         "    Ele fica visível no HTML puro, sem precisar de JavaScript, o que",
         '    resolve a violação do AdSense de "tela sem conteúdo do editor".',
+        "    Cada notícia inclui um resumo original gerado por IA (Gemini),",
+        '    para evitar o problema de "conteúdo de baixo valor" (só links).',
         "    O JavaScript apenas SUBSTITUI este conteúdo quando o usuário",
         "    clica em um time específico — a carga inicial já vem pronta.",
         "  -->",
@@ -151,7 +219,11 @@ def update_html():
     with open(HTML_FILE, encoding="utf-8") as f:
         content = f.read()
 
-    all_stories = {key: fetch_news(info["query"]) for key, info in CLUBS.items()}
+    all_stories = {}
+    for key, info in CLUBS.items():
+        stories = fetch_news(info["query"])
+        stories = add_summaries_with_gemini(info["label"], stories)
+        all_stories[key] = stories
 
     data_pattern = re.compile(r"// DATA-START.*?// DATA-END", re.DOTALL)
     stories_pattern = re.compile(r"<!-- STORIES-START -->.*?<!-- STORIES-END -->", re.DOTALL)
@@ -173,7 +245,7 @@ def update_html():
     with open(HTML_FILE, "w", encoding="utf-8") as f:
         f.write(content)
 
-    print("index.html atualizado com sucesso (DATA + conteúdo visível sem JS).")
+    print("index.html atualizado com sucesso (DATA + conteúdo visível sem JS + resumos por IA).")
 
 
 if __name__ == "__main__":

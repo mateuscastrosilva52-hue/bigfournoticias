@@ -1,12 +1,12 @@
 """
 Script que busca as últimas notícias de Flamengo, Vasco, Botafogo e Fluminense
-no Google News (RSS, sem necessidade de chave de API para a busca) e usa a
-API gratuita do Google Gemini para escrever um resuminho ORIGINAL de 1-2
-frases para cada manchete — em vez de só linkar para a matéria externa.
+no Google News (RSS) e usa a API gratuita do Google Gemini para escrever UM
+resumo diário original por clube — um parágrafo sintetizando as principais
+notícias do dia, em vez de uma lista de links individuais.
 
 Isso resolve o problema de "conteúdo de baixo valor" apontado pelo AdSense:
-antes, a home era basicamente uma lista de links; agora cada notícia tem um
-comentário próprio, escrito com apoio de IA a partir da manchete.
+antes a home era basicamente uma lista de links; agora cada time tem um
+texto de verdade, escrito com apoio de IA a partir das manchetes do dia.
 
 O script atualiza o index.html em DOIS lugares:
 1. O bloco "DATA-START ... DATA-END" (usado pelo JavaScript ao filtrar por time).
@@ -26,6 +26,7 @@ import os
 import re
 import json
 import html
+import datetime
 import feedparser
 import requests
 
@@ -60,59 +61,43 @@ CLUBS = {
     },
 }
 
-MAX_STORIES_PER_CLUB = 5
-STORIES_IN_HOMEPAGE_PER_CLUB = 2  # quantas notícias de cada time aparecem na home ("Todos")
+HEADLINES_PER_CLUB = 8
 HTML_FILE = "index.html"
 GEMINI_MODEL = "gemini-3.5-flash"
 
 
-def fetch_news(query: str, limit: int = MAX_STORIES_PER_CLUB):
-    """Busca notícias recentes no Google News RSS para uma consulta."""
+def fetch_headlines(query: str, limit: int = HEADLINES_PER_CLUB):
+    """Busca manchetes recentes no Google News RSS para uma consulta."""
     url = f"https://news.google.com/rss/search?q={query.replace(' ', '+')}&hl=pt-BR&gl=BR&ceid=BR:pt-419"
     feed = feedparser.parse(url)
-    items = []
-    for entry in feed.entries[:limit]:
-        raw_title = entry.title
-        source = "Google Notícias"
-        if hasattr(entry, "source") and entry.source and entry.source.get("title"):
-            source = entry.source["title"]
-        if raw_title.endswith(f" - {source}"):
-            raw_title = raw_title[: -(len(source) + 3)]
-        items.append({
-            "title": raw_title.strip(),
-            "link": entry.link,
-            "source": source,
-        })
-    return items
+    return [entry.title for entry in feed.entries[:limit]]
 
 
-def add_summaries_with_gemini(club_label: str, stories: list) -> list:
+def generate_club_digest(club_label: str, headlines: list) -> dict:
     """
-    Manda as manchetes de um clube para o Gemini e pede um resumo original
-    de 1-2 frases para cada uma. Se a chamada falhar por qualquer motivo,
-    devolve as notícias sem resumo (o site continua funcionando normalmente).
+    Manda as manchetes do dia de um clube para o Gemini e pede um resumo
+    diário original: um título curto e um parágrafo de 3-5 frases. Se a
+    chamada falhar, devolve um digest vazio (o site mostra um aviso simples).
     """
     api_key = os.environ.get("GEMINI_API_KEY")
-    if not api_key or not stories:
-        for s in stories:
-            s["summary"] = ""
-        return stories
+    if not api_key or not headlines:
+        return {"title": "", "summary": ""}
 
-    titles_list = "\n".join(f"{i+1}. {s['title']}" for i, s in enumerate(stories))
+    headlines_list = "\n".join(f"- {h}" for h in headlines)
     prompt = f"""Você escreve para um jornal esportivo carioca chamado "Big Four",
 que cobre o {club_label}.
 
-Para cada manchete abaixo, escreva um resumo ORIGINAL de 1 a 2 frases, em
-português do Brasil, explicando o contexto ou a relevância da notícia —
-não apenas repetindo o título com outras palavras. Se a manchete for vaga,
-comente de forma mais genérica em vez de inventar detalhes que não estão nela.
+Com base nas manchetes recentes abaixo, escreva um resumo diário ORIGINAL
+sobre o momento do {club_label} — um parágrafo de 3 a 5 frases, em português
+do Brasil, sintetizando e contextualizando as notícias (não apenas listando
+os títulos com outras palavras). Se as manchetes forem vagas ou repetitivas,
+comente de forma mais genérica em vez de inventar fatos que não estão nelas.
 
-Manchetes:
-{titles_list}
+Manchetes de hoje:
+{headlines_list}
 
-Responda APENAS com um JSON array de strings, na mesma ordem das manchetes,
-um resumo por item. Não escreva nada fora do JSON, sem markdown, sem ```json.
-Exemplo de formato: ["Resumo da primeira notícia.", "Resumo da segunda notícia."]
+Responda APENAS com um JSON no formato abaixo, sem markdown, sem \\`\\`\\`json:
+{{"title": "Uma frase curta e direta sobre o momento do time", "summary": "O parágrafo de 3 a 5 frases"}}
 """
 
     try:
@@ -129,38 +114,27 @@ Exemplo de formato: ["Resumo da primeira notícia.", "Resumo da segunda notícia
         text = re.sub(r"^```json\s*", "", text)
         text = re.sub(r"^```\s*", "", text)
         text = re.sub(r"```\s*$", "", text)
-        summaries = json.loads(text)
-
-        for i, s in enumerate(stories):
-            s["summary"] = summaries[i] if i < len(summaries) else ""
+        result = json.loads(text)
+        return {"title": result.get("title", ""), "summary": result.get("summary", "")}
     except Exception as e:
-        print(f"Aviso: não consegui gerar resumos para {club_label} ({e}). Seguindo sem resumo.")
-        for s in stories:
-            s["summary"] = ""
-
-    return stories
+        print(f"Aviso: não consegui gerar o resumo de {club_label} ({e}).")
+        return {"title": "", "summary": ""}
 
 
-def build_data_block(all_stories):
+def build_data_block(all_digests):
     lines = ["// DATA-START", "const DATA = {"]
     club_keys = list(CLUBS.keys())
     for i, (key, info) in enumerate(CLUBS.items()):
-        stories = all_stories[key]
-        stories_js = ",\n      ".join(
-            '{{ title:"{title}", link:"{link}", source:"{source}", summary:"{summary}" }}'.format(
-                title=html.escape(s["title"]).replace("'", "\\'").replace('"', '\\"'),
-                link=s["link"],
-                source=html.escape(s["source"]).replace('"', '\\"'),
-                summary=html.escape(s.get("summary", "")).replace("'", "\\'").replace('"', '\\"').replace("\n", " "),
-            )
-            for s in stories
-        )
+        digest = all_digests[key]
+        title = html.escape(digest["title"]).replace("'", "\\'").replace('"', '\\"')
+        summary = html.escape(digest["summary"]).replace("'", "\\'").replace('"', '\\"').replace("\n", " ")
         comma = "," if i < len(club_keys) - 1 else ""
         lines.append(f'  {key}: {{')
         lines.append(f'    label: "{info["label"]}", short: "{info["short"]}",')
         lines.append(f'    theme: {info["theme"]},')
         lines.append(f'    dot: "{info["dot"]}",')
-        lines.append(f'    stories: [\n      {stories_js}\n    ]')
+        lines.append(f'    title: "{title}",')
+        lines.append(f'    summary: "{summary}"')
         lines.append(f'  }}{comma}')
     lines.append("};")
     lines.append("")
@@ -172,27 +146,21 @@ def build_data_block(all_stories):
     return "\n".join(lines)
 
 
-def build_stories_html(all_stories):
+def build_stories_html(all_digests):
     """
-    Gera o HTML puro (visível sem JavaScript) com uma mistura de notícias
-    dos quatro times, cada uma com o resumo original escrito pela IA.
+    Gera o HTML puro (visível sem JavaScript) com os 4 resumos diários,
+    um por clube.
     """
-    mixed = []
-    for key in CLUBS:
-        mixed.extend(all_stories[key][:STORIES_IN_HOMEPAGE_PER_CLUB])
-
     cards = []
-    for s in mixed:
-        title = html.escape(s["title"])
-        source = html.escape(s["source"])
-        link = html.escape(s["link"], quote=True)
-        summary = html.escape(s.get("summary", ""))
-        summary_html = f'\n      <p>{summary}</p>' if summary else ""
+    for key, info in CLUBS.items():
+        digest = all_digests[key]
+        title = html.escape(digest["title"]) or f"Momento do {info['label']}"
+        summary = html.escape(digest["summary"]) or "Resumo do dia ainda não disponível."
         cards.append(
             '    <div class="story">\n'
-            f'      <span class="tag">{source}</span>\n'
-            f'      <h3>{title}</h3>{summary_html}\n'
-            f'      <a class="source" href="{link}" target="_blank" rel="noopener">Leia a matéria completa →</a>\n'
+            f'      <span class="tag">{html.escape(info["label"])}</span>\n'
+            f'      <h3>{title}</h3>\n'
+            f'      <p>{summary}</p>\n'
             '    </div>'
         )
 
@@ -202,10 +170,8 @@ def build_stories_html(all_stories):
         "    Este bloco é escrito diretamente pelo update_news.py a cada execução.",
         "    Ele fica visível no HTML puro, sem precisar de JavaScript, o que",
         '    resolve a violação do AdSense de "tela sem conteúdo do editor".',
-        "    Cada notícia inclui um resumo original gerado por IA (Gemini),",
-        '    para evitar o problema de "conteúdo de baixo valor" (só links).',
-        "    O JavaScript apenas SUBSTITUI este conteúdo quando o usuário",
-        "    clica em um time específico — a carga inicial já vem pronta.",
+        "    Cada time tem um resumo diário original gerado por IA (Gemini),",
+        '    em vez de uma lista de links (evita "conteúdo de baixo valor").',
         "  -->",
         '  <div class="stories" id="stories">',
         "\n".join(cards),
@@ -219,33 +185,32 @@ def update_html():
     with open(HTML_FILE, encoding="utf-8") as f:
         content = f.read()
 
-    all_stories = {}
+    all_digests = {}
     for key, info in CLUBS.items():
-        stories = fetch_news(info["query"])
-        stories = add_summaries_with_gemini(info["label"], stories)
-        all_stories[key] = stories
+        headlines = fetch_headlines(info["query"])
+        all_digests[key] = generate_club_digest(info["label"], headlines)
 
     data_pattern = re.compile(r"// DATA-START.*?// DATA-END", re.DOTALL)
     stories_pattern = re.compile(r"<!-- STORIES-START -->.*?<!-- STORIES-END -->", re.DOTALL)
+    date_pattern = re.compile(r"<!-- HOME-DATE-START -->.*?<!-- HOME-DATE-END -->", re.DOTALL)
 
-    if not data_pattern.search(content):
+    if not data_pattern.search(content) or not stories_pattern.search(content):
         raise RuntimeError(
-            "Não encontrei os marcadores // DATA-START e // DATA-END no index.html. "
-            "Confirme se o arquivo é a versão certa do site."
-        )
-    if not stories_pattern.search(content):
-        raise RuntimeError(
-            "Não encontrei os marcadores <!-- STORIES-START --> e <!-- STORIES-END --> "
-            "no index.html. Use a versão atualizada do index.html que inclui esse bloco."
+            "Não encontrei os marcadores DATA-START/END ou STORIES-START/END no "
+            "index.html. Use a versão do arquivo que já inclui esses blocos."
         )
 
-    content = data_pattern.sub(build_data_block(all_stories), content)
-    content = stories_pattern.sub(build_stories_html(all_stories), content)
+    content = data_pattern.sub(build_data_block(all_digests), content)
+    content = stories_pattern.sub(build_stories_html(all_digests), content)
+
+    if date_pattern.search(content):
+        hoje = datetime.date.today().strftime("%d/%m/%Y")
+        content = date_pattern.sub(f"<!-- HOME-DATE-START -->Edição de {hoje}<!-- HOME-DATE-END -->", content)
 
     with open(HTML_FILE, "w", encoding="utf-8") as f:
         f.write(content)
 
-    print("index.html atualizado com sucesso (DATA + conteúdo visível sem JS + resumos por IA).")
+    print("index.html atualizado com sucesso (resumos diários por IA, um por clube).")
 
 
 if __name__ == "__main__":
